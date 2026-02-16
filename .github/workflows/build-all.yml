@@ -131,7 +131,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Log in to Docker Hub 
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-      - name: Tag  and push the images to Docker hub
+      - name: Tag and push the images to Docker hub
         run: |
           docker tag computerclubsystem/state-manager:dev docker.io/computerclubsystem/state-manager:dev
           docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/state-manager:dev
