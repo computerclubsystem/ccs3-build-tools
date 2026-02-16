@@ -111,16 +111,16 @@ jobs:
           docker buildx build \
             -t computerclubsystem/operator-connector:dev \
             -f ccs3-backend/devops/Dockerfile.operator-connector \
-            ccs3-backend/devops
+            ccs3-backend
           docker buildx build \
             -t computerclubsystem/pc-connector:dev \
             -f ccs3-backend/devops/Dockerfile.pc-connector \
-            ccs3-backend/devops
+            ccs3-backend
           docker buildx build \
             -t computerclubsystem/qrcode-signin:dev \
             -f ccs3-backend/devops/Dockerfile.qrcode-signin \
-            ccs3-backend/devops
+            ccs3-backend
           docker buildx build \
             -t computerclubsystem/state-manager:dev \
             -f ccs3-backend/devops/Dockerfile.state-manager \
-            ccs3-backend/devops
+            ccs3-backend
