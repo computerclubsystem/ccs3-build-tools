@@ -110,7 +110,7 @@ jobs:
             ccs3-backend/devops/static-files-service
           docker buildx build \
             -t computerclubsystem/operator-connector:dev \
-            -f ccs3-backend/devops/devops/Dockerfile.operator-connector \
+            -f ccs3-backend/devops/Dockerfile.operator-connector \
             ccs3-backend/devops
           docker buildx build \
             -t computerclubsystem/pc-connector:dev \
