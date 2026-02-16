@@ -129,17 +129,32 @@ jobs:
         run: |
           VERSION=$(node -p "require('./ccs3-backend/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - name: Tag state-manager for Docker hub
-        run: |
-          docker tag computerclubsystem/state-manager:dev docker.io/computerclubsystem/state-manager:dev
-          docker tag computerclubsystem/state-manager:dev docker.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
       - name: Log in to Docker Hub 
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-      - name: Push state-manager:dev to Docker hub
+      - name: Tag  and push the images to Docker hub
         run: |
+          docker tag computerclubsystem/state-manager:dev docker.io/computerclubsystem/state-manager:dev
           docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/state-manager:dev
-      - name: Push state-manager:{{version}} to Docker hub
-        run: |
+          docker tag computerclubsystem/state-manager:dev docker.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
           docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/state-manager:${{ steps.backend_version.outputs.version }}
-
-
+          
+          docker tag computerclubsystem/qrcode-signin:dev docker.io/computerclubsystem/qrcode-signin:dev
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/qrcode-signin:dev
+          docker tag computerclubsystem/qrcode-signin:dev docker.io/computerclubsystem/qrcode-signin:${{ steps.backend_version.outputs.version }}
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/qrcode-signin:${{ steps.backend_version.outputs.version }}
+          
+          docker tag computerclubsystem/static-files-service:dev docker.io/computerclubsystem/static-files-service:dev
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/static-files-service:dev
+          docker tag computerclubsystem/static-files-service:dev docker.io/computerclubsystem/static-files-service:${{ steps.backend_version.outputs.version }}
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/static-files-service:${{ steps.backend_version.outputs.version }}
+          
+          docker tag computerclubsystem/pc-connector:dev docker.io/computerclubsystem/pc-connector:dev
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/pc-connector:dev
+          docker tag computerclubsystem/pc-connector:dev docker.io/computerclubsystem/pc-connector:${{ steps.backend_version.outputs.version }}
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/pc-connector:${{ steps.backend_version.outputs.version }}
+          
+          docker tag computerclubsystem/operator-connector:dev docker.io/computerclubsystem/operator-connector:dev
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/operator-connector:dev
+          docker tag computerclubsystem/operator-connector:dev docker.io/computerclubsystem/operator-connector:${{ steps.backend_version.outputs.version }}
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/operator-connector:${{ steps.backend_version.outputs.version }}
+          
