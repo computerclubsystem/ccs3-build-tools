@@ -138,6 +138,8 @@ jobs:
       - name: Push state-manager:dev to GHCR
         run: |
           docker push ghcr.io/computerclubsystem/state-manager:dev
+      - name: Push state-manager:{{version}} to GHCR
+        run: |
           docker push ghcr.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
 
 
