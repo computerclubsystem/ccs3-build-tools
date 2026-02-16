@@ -129,17 +129,17 @@ jobs:
         run: |
           VERSION=$(node -p "require('./ccs3-backend/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - name: Tag state-manager for GHCR
+      - name: Tag state-manager for Docker hub
         run: |
-          docker tag computerclubsystem/state-manager:dev ghcr.io/computerclubsystem/state-manager:dev
-          docker tag computerclubsystem/state-manager:dev ghcr.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
-      - name: Push state-manager:dev to GHCR
+          docker tag computerclubsystem/state-manager:dev docker.io/computerclubsystem/state-manager:dev
+          docker tag computerclubsystem/state-manager:dev docker.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
+      - name: Log in to Docker Hub 
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      - name: Push state-manager:dev to Docker hub
         run: |
-          docker push ghcr.io/computerclubsystem/state-manager:dev
-      - name: Push state-manager:{{version}} to GHCR
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/state-manager:dev
+      - name: Push state-manager:{{version}} to Docker hub
         run: |
-          docker push ghcr.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/state-manager:${{ steps.backend_version.outputs.version }}
 
 
