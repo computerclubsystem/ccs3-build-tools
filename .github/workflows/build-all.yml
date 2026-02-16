@@ -2,8 +2,6 @@ name: CCS3 Multi-Repo Build
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
 
 jobs:
   build:
