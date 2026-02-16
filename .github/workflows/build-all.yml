@@ -124,3 +124,20 @@ jobs:
             -t computerclubsystem/state-manager:dev \
             -f ccs3-backend/devops/Dockerfile.state-manager \
             ccs3-backend
+      - name: Read version from backend package.json
+        id: backend_version
+        run: |
+          VERSION=$(node -p "require('./ccs3-backend/package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Tag state-manager for GHCR
+        run: |
+          docker tag computerclubsystem/state-manager:dev ghcr.io/computerclubsystem/state-manager:dev
+          docker tag computerclubsystem/state-manager:dev ghcr.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
+      - name: Push state-manager:dev to GHCR
+        run: |
+          docker push ghcr.io/computerclubsystem/state-manager:dev
+          docker push ghcr.io/computerclubsystem/state-manager:${{ steps.backend_version.outputs.version }}
+
+
