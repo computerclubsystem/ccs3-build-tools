@@ -1,0 +1,126 @@
+name: CCS3 Multi-Repo Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ---------------------------------------------------------
+      # 1. Set up Buildx using the DOCKER driver
+      # ---------------------------------------------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+          install: true
+
+      # --------------------------------------------------------- 
+      # 2. Install Node and .NET (needed for Angular + backend) 
+      # --------------------------------------------------------- 
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with: 
+          node-version: 24
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # ---------------------------------------------------------
+      # 2. Checkout THIS repository (ccs3-build-tools)
+      # ---------------------------------------------------------
+      - name: Checkout ccs3-build-tools repo
+        uses: actions/checkout@v4
+
+      # ---------------------------------------------------------
+      # 3. Clone and build Repo A (scratch image)
+      # ---------------------------------------------------------
+      - name: Checkout Repo ccs3-windows-apps
+        uses: actions/checkout@v4
+        with:
+          repository: computerclubsystem/ccs3-windows-apps
+          path: ccs3-windows-apps
+
+      - name: Build Repo ccs3-windows-apps (scratch image)
+        run: |
+          docker buildx build --load \
+            -t computerclubsystem/client-app-bootstrap-windows-service:dev \
+            -f ccs3-windows-apps/Ccs3ClientAppBootstrapWindowsService/Ccs3ClientAppBootstrapWindowsService/Dockerfile \
+            ccs3-windows-apps/Ccs3ClientAppBootstrapWindowsService/Ccs3ClientAppBootstrapWindowsService
+          docker buildx build --load \
+            -t computerclubsystem/client-app-windows-service:dev \
+            -f ccs3-windows-apps/Ccs3ClientAppWindowsService/Ccs3ClientAppWindowsService/Dockerfile \
+            ccs3-windows-apps/Ccs3ClientAppWindowsService/Ccs3ClientAppWindowsService
+          docker buildx build --load \
+            -t computerclubsystem/client-app:dev \
+            -f ccs3-windows-apps/Ccs3ClientApp/Ccs3ClientApp/Dockerfile \
+            ccs3-windows-apps/Ccs3ClientApp/Ccs3ClientApp
+
+      # ---------------------------------------------------------
+      # 4. Clone and build Repo ccs3-operator (scratch image)
+      # ---------------------------------------------------------
+      - name: Checkout Repo ccs3-operator
+        uses: actions/checkout@v4
+        with:
+          repository: computerclubsystem/ccs3-operator
+          path: ccs3-operator
+
+      - name: Build Repo ccs3-operator (scratch image)
+        run: |
+          docker buildx build --load \
+            -t computerclubsystem/operator-web-app-static-files:dev \
+            -f ccs3-operator/devops/Dockerfile \
+            ccs3-operator
+
+      # ---------------------------------------------------------
+      # 5. Clone and build Repo C (scratch image)
+      # ---------------------------------------------------------
+      - name: Checkout Repo ccs3-qrcode-signin
+        uses: actions/checkout@v4
+        with:
+          repository: computerclubsystem/ccs3-qrcode-signin
+          path: ccs3-qrcode-signin
+
+      - name: Build Repo ccs3-qrcode-signin (scratch image)
+        run: |
+          docker buildx build --load \
+            -t computerclubsystem/qrcode-signin-web-app-static-files:dev \
+            -f ccs3-qrcode-signin/devops/Dockerfile \
+            ccs3-qrcode-signin
+
+      # ---------------------------------------------------------
+      # 6. Clone and build final repo computerclubsystem/ccs3-backend that uses scratch images
+      # ---------------------------------------------------------
+      - name: Checkout Final Repo ccs3-backend
+        uses: actions/checkout@v4
+        with:
+          repository: computerclubsystem/ccs3-backend
+          path: ccs3-backend
+
+      - name: Build Final Image (uses scratch images)
+        run: |
+          docker buildx build \
+            -t computerclubsystem/static-files-service:dev \
+            -f ccs3-backend/devops/Dockerfile.static-files-service \
+            ccs3-backend/devops/static-files-service
+          docker buildx build \
+            -t computerclubsystem/operator-connector:dev \
+            -f ccs3-backend/devops/devops/Dockerfile.operator-connector \
+            ccs3-backend/devops
+          docker buildx build \
+            -t computerclubsystem/pc-connector:dev \
+            -f ccs3-backend/devops/Dockerfile.pc-connector \
+            ccs3-backend/devops
+          docker buildx build \
+            -t computerclubsystem/qrcode-signin:dev \
+            -f ccs3-backend/devops/Dockerfile.qrcode-signin \
+            ccs3-backend/devops
+          docker buildx build \
+            -t computerclubsystem/state-manager:dev \
+            -f ccs3-backend/devops/Dockerfile.state-manager \
+            ccs3-backend/devops
