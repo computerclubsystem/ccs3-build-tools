@@ -1,8 +1,6 @@
 # ComputerClubSystem certificate creation
 
-## Navigate to the folder with create-ca.sh, create-cert.sh, openssl.cnf and Dockerfile.
-
-## Build the image:
+## The image computerclubsystem/create-certs is already published to Docker Hub but if you need to build the image, navigate to the folder with create-ca.sh, create-cert.sh, openssl.cnf and Dockerfile and execute
 ```bash
 docker buildx build -t computerclubsystem/create-certs .
 ```
